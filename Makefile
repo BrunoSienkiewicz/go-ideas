@@ -6,3 +6,8 @@ run: build
 
 test:
 	@go test ./...
+
+clean:
+	@rm -rf build
+
+.PHONY: build run test
