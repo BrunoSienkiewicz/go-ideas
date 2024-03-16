@@ -66,7 +66,9 @@ func (s *APIServer) handleAddIdea(w http.ResponseWriter, r *http.Request) error 
 }
 
 func (s *APIServer) handleGetIdea(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	idea := NewIdea("test", "test", map[string]string{"test": "test"})
+
+	return writeJSON(w, http.StatusOK, idea)
 }
 
 func (s *APIServer) handleDeleteIdea(w http.ResponseWriter, r *http.Request) error {
