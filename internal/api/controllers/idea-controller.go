@@ -1,6 +1,4 @@
-package main
-
-import "math/rand"
+package controllers
 
 type Idea struct {
 	ID         int         `json:"id"`
