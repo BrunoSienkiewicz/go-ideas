@@ -1,17 +1,10 @@
-package main
-
-import "math/rand"
+package types
 
 type Idea struct {
 	ID         int         `json:"id"`
 	Name       string      `json:"name"`
 	Category   string      `json:"category"`
 	Attributes []Attribute `json:"attributes"`
-}
-
-type Attribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
 }
 
 type CreateIdeaRequest struct {

@@ -1,8 +1,8 @@
 build:
-	@go build -o build/go_ideas
+	@go build -o build/server
 
 run: build
-	@./build/go_ideas
+	@./build/server
 
 test:
 	@go test ./...

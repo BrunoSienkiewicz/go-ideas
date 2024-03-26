@@ -4,7 +4,7 @@
 
 FROM golang:1.18-alpine AS build
 
-WORKDIR /app
+WORKDIR .
 
 COPY go.mod ./
 COPY go.sum ./
@@ -24,7 +24,8 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-COPY --from=0 /app/server ./
+COPY --from=0 /build/server ./
+COPY .env ./
 COPY ./config/ ./config/
 COPY ./migrations/ ./migrations/
 
