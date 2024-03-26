@@ -1,16 +1,15 @@
 package api
 
 import (
-	"internal/storage"
 	"net/http"
 )
 
 func NewRouter() http.Handler {
 	r := http.NewServeMux()
 
-	ideaController := NewIdeaController(NewIdeaStorage())
+	ideaHandler := &IdeaHandler{}
 
-	r.HandleFunc("/idea", makeHTTPHandleFunc(ideaController.handleIdea))
+	r.HandleFunc("/idea", makeHTTPHandleFunc(ideaHandler.handleIdea))
 
 	return r
 }

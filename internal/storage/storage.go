@@ -3,6 +3,8 @@ package storage
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
+
+	config "github.com/BrunoSienkiewicz/go_ideas/config"
 )
 
 type Storage[T any] interface {
@@ -18,7 +20,9 @@ type PostgresStorage struct {
 }
 
 func NewPostgresStorage() (*PostgresStorage, error) {
-	db, err := sql.Open("postgres", "user=postgres password=postgres dbname=ideas_db sslmode=disable")
+	cfg := config.NewConfig()
+	db, err := sql.Open("postgres", cfg.GetDbConnectionString())
+
 	if err != nil {
 		return nil, err
 	}
