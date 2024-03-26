@@ -13,6 +13,10 @@ type CreateIdeaRequest struct {
 	Attributes []Attribute `json:"attributes"`
 }
 
+type GetIdeaRequest struct {
+	ID int `json:"id"`
+}
+
 func NewIdea(name string, category string, attributes []Attribute) *Idea {
 	return &Idea{
 		Name:       name,
