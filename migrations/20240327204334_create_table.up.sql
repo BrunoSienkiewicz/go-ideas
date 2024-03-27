@@ -1,8 +1,3 @@
--- Create database
-CREATE DATABASE ideas_db;
-
-\c ideas_db;
-
 -- Categories
 CREATE TABLE categories (
     category_id SERIAL PRIMARY KEY,
@@ -13,7 +8,8 @@ CREATE TABLE categories (
 CREATE TABLE attributes (
     attribute_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    value TEXT
+    value TEXT,
+    idea_id INT REFERENCES ideas(idea_id)
 );
 
 -- Ideas
@@ -22,4 +18,6 @@ CREATE TABLE ideas (
     name VARCHAR(255) NOT NULL,
     category_id INT REFERENCES categories(category_id)
 );
+
+
 

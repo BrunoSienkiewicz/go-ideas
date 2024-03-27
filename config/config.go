@@ -23,7 +23,7 @@ func loadEnv() {
 }
 
 func (c *Config) GetDbConnectionString() string {
-	return "user=" + c.DbUser + " password=" + c.DbPassword + " dbname=" + c.DbName + " host=" + c.DbHost + " port=" + c.DbPort
+	return "user=" + c.DbUser + " password=" + c.DbPassword + " dbname=" + c.DbName + " host=" + c.DbHost + " port=" + c.DbPort + " sslmode=disable"
 }
 
 func NewConfig(opts ...ConfigOption) *Config {

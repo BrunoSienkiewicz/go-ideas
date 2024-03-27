@@ -10,7 +10,10 @@ type IdeaStorage struct {
 }
 
 func (s *IdeaStorage) GetObject(id int) (*types.Idea, error) {
-	return nil, nil
+	// return nil, nil
+	attributes := make([]types.Attribute, 0)
+	attributes = append(attributes, types.Attribute{Name: "key", Value: "value"})
+	return &types.Idea{ID: 1, Name: "test", Category: "test", Attributes: attributes}, nil
 }
 
 func (s *IdeaStorage) AddObject(obj *types.Idea) error {

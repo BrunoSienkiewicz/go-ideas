@@ -1,0 +1,3 @@
+DROP TABLE attributes CASCADE;
+DROP TABLE ideas CASCADE;
+DROP TABLE categories CASCADE;

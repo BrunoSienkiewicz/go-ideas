@@ -1,27 +1,25 @@
 package server
 
 import (
-	"internal/api"
-	"internal/db"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	storage "github.com/BrunoSienkiewicz/go_ideas/internal/storage"
 )
 
 type APIServer struct {
-	listenAddr string
-	store      Storage
+	listenAddr  string
+	postStorage storage.PostgresStorage
 }
 
-func NewAPIServer(listenAddr string, store Storage) *APIServer {
+func NewAPIServer(listenAddr string, store storage.PostgresStorage) *APIServer {
 	return &APIServer{
-		listenAddr: listenAddr,
-		store:      store,
+		listenAddr:  listenAddr,
+		postStorage: store,
 	}
 }
 
-func (s *APIServer) Start(router *mux.Router) error {
+func (s *APIServer) Start(router http.Handler) error {
 	log.Printf("API server listening on %s", s.listenAddr)
 
 	return http.ListenAndServe(s.listenAddr, router)
