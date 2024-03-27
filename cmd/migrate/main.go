@@ -23,7 +23,7 @@ func main() {
 
 	// Create a new instance of the migration tool
 	m, err := migrate.New(
-		"file://migrations", // Path to the migrations directory
+		"file:///migrations", // Path to the migrations directory
 		connString,
 	)
 	if err != nil {

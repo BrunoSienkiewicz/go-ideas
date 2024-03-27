@@ -23,7 +23,7 @@ func loadEnv() {
 }
 
 func (c *Config) GetDbConnectionString() string {
-	return "user=" + c.DbUser + " password=" + c.DbPassword + " dbname=" + c.DbName + " host=" + c.DbHost + " port=" + c.DbPort + " sslmode=disable"
+	return "postgres://" + c.DbUser + ":" + c.DbPassword + "@" + c.DbHost + ":" + c.DbPort + "/" + c.DbName + "?sslmode=disable"
 }
 
 func NewConfig(opts ...ConfigOption) *Config {
