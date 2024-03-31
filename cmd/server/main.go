@@ -14,7 +14,7 @@ func main() {
 		log.Fatalf("Error opening database: %v", err)
 	}
 
-	router := api.NewRouter()
+	router := api.NewRouter(store)
 
 	server := server.NewAPIServer(":5000", *store)
 	server.Start(router)

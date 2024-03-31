@@ -20,10 +20,11 @@ func main() {
 	// Load the environment variables
 	cfg := config.NewConfig()
 	connString := cfg.GetDbConnectionString()
+	log.Printf("Connection string: %s", connString)
 
 	// Create a new instance of the migration tool
 	m, err := migrate.New(
-		"file:///migrations", // Path to the migrations directory
+		"github.com/BrunoSienkiewicz/go_ideas/migrations",
 		connString,
 	)
 	if err != nil {
