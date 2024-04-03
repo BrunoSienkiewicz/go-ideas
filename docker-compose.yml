@@ -13,8 +13,8 @@ services:
       - "5432:5432"
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: docker/backend.Dockerfile
     container_name: app
     restart: unless-stopped
     depends_on:

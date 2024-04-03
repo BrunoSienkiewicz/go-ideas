@@ -13,11 +13,9 @@ type IdeaHandler struct {
 	store storage.Storage[types.Idea]
 }
 
-func NewIdeaHandler(postgres *storage.PostgresStorage) *IdeaHandler {
-	idea_storage := storage.NewIdeaStorage(postgres)
-
+func NewIdeaHandler(store storage.Storage[types.Idea]) *IdeaHandler {
 	return &IdeaHandler{
-		store: idea_storage,
+		store: store,
 	}
 }
 

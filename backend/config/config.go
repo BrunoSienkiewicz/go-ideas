@@ -12,6 +12,8 @@ type Config struct {
 	DbName     string
 	DbHost     string
 	DbPort     string
+
+	ListenAddr string
 }
 
 type ConfigOption func(*Config)
@@ -35,6 +37,8 @@ func NewConfig(opts ...ConfigOption) *Config {
 		DbName:     os.Getenv("DB_NAME"),
 		DbHost:     os.Getenv("DB_HOST"),
 		DbPort:     os.Getenv("DB_PORT"),
+
+		ListenAddr: os.Getenv("LISTEN_ADDR"),
 	}
 
 	for _, opt := range opts {

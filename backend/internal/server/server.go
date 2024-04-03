@@ -8,14 +8,12 @@ import (
 )
 
 type APIServer struct {
-	listenAddr  string
-	postStorage storage.PostgresStorage
+	listenAddr string
 }
 
 func NewAPIServer(listenAddr string, store storage.PostgresStorage) *APIServer {
 	return &APIServer{
-		listenAddr:  listenAddr,
-		postStorage: store,
+		listenAddr: listenAddr,
 	}
 }
 

@@ -3,8 +3,11 @@ package types
 import "database/sql"
 
 type Attribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	DbObject
+	Id     int    `json:"id"`
+	IdeaId int    `json:"idea_id"`
+	Name   string `json:"name"`
+	Value  string `json:"value"`
 }
 
 func NewAttribute(name string, value string) *Attribute {

@@ -7,14 +7,6 @@ import (
 	config "github.com/BrunoSienkiewicz/go_ideas/config"
 )
 
-type Storage[T any] interface {
-	GetObject(id int) (*T, error)
-	AddObject(obj *T) error
-	UpdateObject(obj *T) error
-	DeleteObject(id int) error
-	ListObjects() ([]*T, error)
-}
-
 type PostgresStorage struct {
 	db *sql.DB
 }
@@ -32,4 +24,20 @@ func NewPostgresStorage() (*PostgresStorage, error) {
 	}
 
 	return &PostgresStorage{db: db}, nil
+}
+
+func (s *PostgresStorage) Query(query string, args ...interface{}) (*sql.Rows, error) {
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return rows, nil
+}
+
+func (s *PostgresStorage) Close() {
+	s.db.Close()
 }
