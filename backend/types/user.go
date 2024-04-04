@@ -6,3 +6,11 @@ type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type DbUser struct {
+	DbObject
+	user_id  int
+	name     string
+	email    string
+	password string
+}

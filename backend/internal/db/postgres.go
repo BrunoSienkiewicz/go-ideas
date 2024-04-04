@@ -1,4 +1,4 @@
-package storage
+package db
 
 import (
 	"database/sql"
@@ -7,11 +7,11 @@ import (
 	config "github.com/BrunoSienkiewicz/go_ideas/config"
 )
 
-type PostgresStorage struct {
+type Postgres struct {
 	db *sql.DB
 }
 
-func NewPostgresStorage() (*PostgresStorage, error) {
+func NewPostgres() (*Postgres, error) {
 	cfg := config.NewConfig()
 	db, err := sql.Open("postgres", cfg.GetDbConnectionString())
 
@@ -23,10 +23,10 @@ func NewPostgresStorage() (*PostgresStorage, error) {
 		return nil, err
 	}
 
-	return &PostgresStorage{db: db}, nil
+	return &Postgres{db: db}, nil
 }
 
-func (s *PostgresStorage) Query(query string, args ...interface{}) (*sql.Rows, error) {
+func (s *Postgres) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	rows, err := s.db.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -38,6 +38,6 @@ func (s *PostgresStorage) Query(query string, args ...interface{}) (*sql.Rows, e
 	return rows, nil
 }
 
-func (s *PostgresStorage) Close() {
+func (s *Postgres) Close() {
 	s.db.Close()
 }

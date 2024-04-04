@@ -14,15 +14,14 @@ type Storage[T types.DbObject] interface {
 type Getter[T types.DbObject] interface {
 	GetObject(id int) (*T, error)
 	GetAllObjects() ([]*T, error)
-	GetObjectByField(field string, value string) (*T, error)
 }
 
 type Adder[T types.DbObject] interface {
-	AddObject(obj *T) error
+	AddObject(obj *T) (*T, error)
 }
 
 type Updater[T types.DbObject] interface {
-	UpdateObject(obj *T) error
+	UpdateObject(obj *T) (*T, error)
 	UpdateObjectField(id int, field string, value string) error
 }
 

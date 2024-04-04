@@ -9,6 +9,13 @@ type Idea struct {
 	Attributes []Attribute `json:"attributes"`
 }
 
+type DbIdea struct {
+	DbObject
+	Idea_id     int
+	Name        string
+	Category_id int
+}
+
 type CreateIdeaRequest struct {
 	Name       string      `json:"name"`
 	Category   string      `json:"category"`
@@ -34,9 +41,9 @@ func NewIdea(name string, category string, attributes []Attribute) *Idea {
 	}
 }
 
-func ScanIntoIdea(rows *sql.Rows) (*Idea, error) {
-	idea := new(Idea)
-	if err := rows.Scan(&idea.ID, &idea.Name, &idea.Category); err != nil {
+func ScanIntoIdea(rows *sql.Rows) (*DbIdea, error) {
+	idea := new(DbIdea)
+	if err := rows.Scan(&idea.Idea_id, &idea.Name, &idea.Category_id); err != nil {
 		return nil, err
 	}
 

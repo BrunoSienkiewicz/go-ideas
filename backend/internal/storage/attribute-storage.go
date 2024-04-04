@@ -1,35 +1,40 @@
 package storage
 
 import (
-	types "github.com/BrunoSienkiewicz/go_ideas/types"
+	"fmt"
+
 	_ "github.com/lib/pq"
+
+	db "github.com/BrunoSienkiewicz/go_ideas/internal/db"
+	types "github.com/BrunoSienkiewicz/go_ideas/types"
+)
+
+const (
+	getAttributeByIDQuery    = `SELECT * FROM ideas.attributes WHERE attribute_id = $1`
+	getAttributeByFieldQuery = `SELECT * FROM ideas.attributes WHERE $1 = $2`
+	getAllAttributesQuery    = `SELECT * FROM ideas.attributes`
+
+	addAttributeQuery = `INSERT INTO ideas.attributes (attribute_id, attribute_name, attribute_value) VALUES ($1, $2, $3) RETURNING attribute_id`
+
+	updateAttributeQuery = `UPDATE ideas.attributes SET attribute_name = $1, attribute_value = $2 WHERE attribute_id = $3 RETURNING attribute_id`
+
+	deleteAttributeQuery = `DELETE FROM ideas.attributes WHERE attribute_id = $1`
 )
 
 type AttributeStorage struct {
-	store *PostgresStorage
+	store *db.Postgres
 }
 
-func NewAttributeStorage(postgres *PostgresStorage) *AttributeStorage {
+func NewAttributeStorage(postgres *db.Postgres) *AttributeStorage {
 	return &AttributeStorage{
 		store: postgres,
 	}
 }
 
-const (
-	attributeSelect = `SELECT * FROM ideas.attributes WHERE idea_id = $1`
-	attributeInsert = `INSERT INTO ideas.attributes (idea_id, name, value) VALUES ($1, $2, $3)`
-	attributeUpdate = `UPDATE ideas.attributes SET name = $1, value = $2 WHERE attribute_id = $3`
-	attributeDelete = `DELETE FROM ideas.attributes WHERE attribute_id = $1`
-)
-
-func (s *AttributeStorage) GetObject(id int) (*types.Attribute, error) {
-	rows, err := s.store.db.Query(attributeSelect, id)
+func (s *AttributeStorage) GetObject(id int) (*types.DbAttribute, error) {
+	rows, err := s.store.Query(getAttributeByIDQuery, id)
 	if err != nil {
 		return nil, err
-	}
-
-	if rows.Err() != nil {
-		return nil, rows.Err()
 	}
 
 	attribute, err := types.ScanIntoAttribute(rows)
@@ -40,28 +45,13 @@ func (s *AttributeStorage) GetObject(id int) (*types.Attribute, error) {
 	return attribute, nil
 }
 
-func (s *AttributeStorage) AddObject(obj *types.Attribute) error {
-	_, err := s.store.db.Exec(attributeInsert, obj.IdeaId, obj.Name, obj.Value)
-	return err
-}
-
-func (s *AttributeStorage) UpdateObject(obj *types.Attribute) error {
-	_, err := s.store.db.Exec(attributeUpdate, obj.Name, obj.Value, obj.Id)
-	return err
-}
-
-func (s *AttributeStorage) DeleteObject(id int) error {
-	_, err := s.store.db.Exec(attributeDelete, id)
-	return err
-}
-
-func (s *AttributeStorage) ListObjects() ([]*types.Attribute, error) {
-	rows, err := s.store.db.Query(`SELECT * FROM ideas.attributes`)
+func (s *AttributeStorage) GetAllObjects() ([]*types.DbAttribute, error) {
+	rows, err := s.store.Query(getAllAttributesQuery)
 	if err != nil {
 		return nil, err
 	}
 
-	var attributes []*types.Attribute
+	var attributes []*types.DbAttribute
 	for rows.Next() {
 		attribute, err := types.ScanIntoAttribute(rows)
 		if err != nil {
@@ -71,4 +61,58 @@ func (s *AttributeStorage) ListObjects() ([]*types.Attribute, error) {
 	}
 
 	return attributes, nil
+}
+
+func (s *AttributeStorage) AddObject(attribute *types.DbAttribute) (*types.DbAttribute, error) {
+	rows, err := s.store.Query(addAttributeQuery, attribute.Name, attribute.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	if !rows.Next() {
+		return nil, fmt.Errorf("could not add attribute")
+	}
+
+	err = rows.Scan(&attribute.Attribute_id)
+	if err != nil {
+		return nil, err
+	}
+
+	return attribute, nil
+}
+
+func (s *AttributeStorage) UpdateObject(attribute *types.DbAttribute) (*types.DbAttribute, error) {
+	rows, err := s.store.Query(updateAttributeQuery, attribute.Name, attribute.Value, attribute.Attribute_id)
+	if err != nil {
+		return nil, err
+	}
+
+	if !rows.Next() {
+		return nil, fmt.Errorf("could not update attribute")
+	}
+
+	return attribute, nil
+}
+
+func (s *AttributeStorage) UpdateObjectField(id int, field string, value string) error {
+	query := `UPDATE ideas.attributes SET $1 = $2 WHERE attribute_id = $3 RETURNING attribute_id`
+	rows, err := s.store.Query(query, field, value, id)
+	if err != nil {
+		return err
+	}
+
+	if !rows.Next() {
+		return fmt.Errorf("could not update attribute")
+	}
+
+	return nil
+}
+
+func (s *AttributeStorage) DeleteObject(id int) error {
+	_, err := s.store.Query(deleteAttributeQuery, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
