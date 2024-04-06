@@ -14,7 +14,7 @@ services:
   app:
     build:
       context: ./backend
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: Dockerfile
     container_name: app
     restart: unless-stopped
     depends_on:
