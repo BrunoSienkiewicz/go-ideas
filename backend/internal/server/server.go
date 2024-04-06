@@ -3,15 +3,13 @@ package server
 import (
 	"log"
 	"net/http"
-
-	storage "github.com/BrunoSienkiewicz/go_ideas/internal/storage"
 )
 
 type APIServer struct {
 	listenAddr string
 }
 
-func NewAPIServer(listenAddr string, store storage.PostgresStorage) *APIServer {
+func NewAPIServer(listenAddr string) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
 	}

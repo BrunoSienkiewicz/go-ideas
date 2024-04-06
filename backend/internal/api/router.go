@@ -3,19 +3,16 @@ package api
 import (
 	"net/http"
 
-	"github.com/BrunoSienkiewicz/go_ideas/internal/storage"
-	attributestorage "github.com/BrunoSienkiewicz/go_ideas/internal/storage/attributestorage"
-	ideastorage "github.com/BrunoSienkiewicz/go_ideas/internal/storage/ideastorage"
+	db "github.com/BrunoSienkiewicz/go_ideas/internal/db"
+	repository "github.com/BrunoSienkiewicz/go_ideas/internal/repository"
 )
 
-func NewRouter(store *storage.PostgresStorage) http.Handler {
+func NewRouter(store *db.Postgres) http.Handler {
 	r := http.NewServeMux()
 
-	attributeStorage := attributestorage.NewAttributeStorage(store)
-	attributeHandler := NewAttributeHandler(attributeStorage)
+	ideaRepository := repository.NewIdeaRepository(store)
 
-	ideaStorage := ideastorage.NewIdeaStorage(store, attributeStorage)
-	ideaHandler := NewIdeaHandler(ideaStorage)
+	ideaHandler := NewIdeaHandler(ideaRepository)
 
 	r.HandleFunc("/idea", makeHTTPHandleFunc(ideaHandler.handleIdea))
 	r.HandleFunc("/idea/{id}", makeHTTPHandleFunc(ideaHandler.handleGetIdeaByID))

@@ -13,18 +13,27 @@ type Storage[T types.DbObject] interface {
 
 type Getter[T types.DbObject] interface {
 	GetObject(id int) (*T, error)
+	GetObjectsByField(field string, value string) ([]*T, error)
 	GetAllObjects() ([]*T, error)
 }
 
 type Adder[T types.DbObject] interface {
-	AddObject(obj *T) (*T, error)
+	AddObject(obj *T) error
 }
 
 type Updater[T types.DbObject] interface {
-	UpdateObject(obj *T) (*T, error)
+	UpdateObject(obj *T) error
 	UpdateObjectField(id int, field string, value string) error
 }
 
 type Deleter[T types.DbObject] interface {
 	DeleteObject(id int) error
+}
+
+type StorageError struct {
+	Err string
+}
+
+func (e StorageError) Error() string {
+	return e.Err
 }

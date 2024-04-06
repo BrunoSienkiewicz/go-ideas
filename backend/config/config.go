@@ -38,7 +38,7 @@ func NewConfig(opts ...ConfigOption) *Config {
 		DbHost:     os.Getenv("DB_HOST"),
 		DbPort:     os.Getenv("DB_PORT"),
 
-		ListenAddr: os.Getenv("LISTEN_ADDR"),
+		ListenAddr: os.Getenv("LISTEN_ADDRESS"),
 	}
 
 	for _, opt := range opts {

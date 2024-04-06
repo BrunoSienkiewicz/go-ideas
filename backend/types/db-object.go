@@ -1,3 +1,3 @@
 package types
 
-type DbObject struct{}
+type DbObject interface{}

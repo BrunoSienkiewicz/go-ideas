@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
-	storage "github.com/BrunoSienkiewicz/go_ideas/internal/storage"
+	repository "github.com/BrunoSienkiewicz/go_ideas/internal/repository"
 	types "github.com/BrunoSienkiewicz/go_ideas/types"
 )
 
 type IdeaHandler struct {
-	store storage.Storage[types.Idea]
+	repository *repository.IdeaRepository
 }
 
-func NewIdeaHandler(store storage.Storage[types.Idea]) *IdeaHandler {
+func NewIdeaHandler(repository *repository.IdeaRepository) *IdeaHandler {
 	return &IdeaHandler{
-		store: store,
+		repository: repository,
 	}
 }
 
@@ -38,8 +38,15 @@ func (h *IdeaHandler) handleAddIdea(w http.ResponseWriter, r *http.Request) erro
 		return writeJSON(w, http.StatusBadRequest, err)
 	}
 
-	idea := types.NewIdea(req.Name, req.Category, req.Attributes)
-	if err := h.store.AddObject(idea); err != nil {
+	_attrubutes := make([]types.Attribute, len(req.Attributes))
+	for i, attr := range req.Attributes {
+		_attrubutes[i] = *types.NewAttribute(attr.Name, attr.Value)
+	}
+
+	// TODO: handle idea from request
+	_idea := types.NewIdea(req.Name, req.Category, _attrubutes)
+	err, idea := h.repository.AddIdea(_idea)
+	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
 
@@ -47,7 +54,7 @@ func (h *IdeaHandler) handleAddIdea(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (h *IdeaHandler) handleGetIdea(w http.ResponseWriter, r *http.Request) error {
-	ideas, err := h.store.ListObjects()
+	ideas, err := h.repository.GetAllIdeas()
 	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
@@ -61,7 +68,7 @@ func (h *IdeaHandler) handleDeleteIdea(w http.ResponseWriter, r *http.Request) e
 		return writeJSON(w, http.StatusBadRequest, err)
 	}
 
-	if err := h.store.DeleteObject(req.ID); err != nil {
+	if err := h.repository.DeleteIdea(req.ID); err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
 
@@ -76,7 +83,7 @@ func (h *IdeaHandler) handleUpdateIdea(w http.ResponseWriter, r *http.Request) e
 
 	idea := types.NewIdea(req.Name, req.Category, req.Attributes)
 	idea.ID = req.ID
-	if err := h.store.UpdateObject(idea); err != nil {
+	if err := h.repository.UpdateIdea(idea); err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
 
@@ -89,7 +96,7 @@ func (h *IdeaHandler) handleGetIdeaByID(w http.ResponseWriter, r *http.Request) 
 		return writeJSON(w, http.StatusBadRequest, err)
 	}
 
-	idea, err := h.store.GetObject(id)
+	idea, err := h.repository.GetIdea(id)
 	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}

@@ -5,20 +5,20 @@ import (
 
 	config "github.com/BrunoSienkiewicz/go_ideas/config"
 	api "github.com/BrunoSienkiewicz/go_ideas/internal/api"
+	db "github.com/BrunoSienkiewicz/go_ideas/internal/db"
 	server "github.com/BrunoSienkiewicz/go_ideas/internal/server"
-	storage "github.com/BrunoSienkiewicz/go_ideas/internal/storage"
 )
 
 func main() {
 	cfg := config.NewConfig()
 
-	store, err := storage.NewPostgresStorage()
+	store, err := db.NewPostgres()
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
 
 	router := api.NewRouter(store)
 
-	server := server.NewAPIServer(cfg.ListenAddr, *store)
+	server := server.NewAPIServer(cfg.ListenAddr)
 	server.Start(router)
 }
