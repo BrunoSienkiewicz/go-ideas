@@ -3,6 +3,7 @@ package types
 import "database/sql"
 
 type Category struct {
+	ApiObject
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }

@@ -52,6 +52,10 @@ func (s *AttributeStorage) GetObjectsByField(field string, value string) ([]*typ
 		return nil, err
 	}
 
+	if !rows.Next() {
+		return nil, NotFoundError{Err: "Attribute with " + field + ": " + value + " Not Found"}
+	}
+
 	var attributes []*types.DbAttribute
 	for rows.Next() {
 		attribute, err := types.ScanIntoAttribute(rows)
@@ -70,6 +74,10 @@ func (s *AttributeStorage) GetAllObjects() ([]*types.DbAttribute, error) {
 		return nil, err
 	}
 
+	if !rows.Next() {
+		return nil, NotFoundError{Err: "No attributes found"}
+	}
+
 	var attributes []*types.DbAttribute
 	for rows.Next() {
 		attribute, err := types.ScanIntoAttribute(rows)
@@ -82,44 +90,45 @@ func (s *AttributeStorage) GetAllObjects() ([]*types.DbAttribute, error) {
 	return attributes, nil
 }
 
-func (s *AttributeStorage) AddObject(attribute *types.DbAttribute) error {
+func (s *AttributeStorage) AddObject(attribute *types.DbAttribute) (*types.DbAttribute, error) {
 	rows, err := s.store.Query(addAttributeQuery, attribute.Name, attribute.Value, attribute.Idea_id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !rows.Next() {
-		return StorageError{Err: "Unable to add attribute"}
+		return nil, NotFoundError{Err: "Unable to add attribute"}
 	}
+	rows.Scan(&attribute.Attribute_id)
 
-	return nil
+	return attribute, nil
 }
 
-func (s *AttributeStorage) UpdateObject(attribute *types.DbAttribute) error {
+func (s *AttributeStorage) UpdateObject(attribute *types.DbAttribute) (*types.DbAttribute, error) {
 	rows, err := s.store.Query(updateAttributeQuery, attribute.Name, attribute.Value, attribute.Attribute_id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !rows.Next() {
-		return StorageError{Err: "Unable to update attribute"}
+		return nil, InvalidFieldError{Err: "Unable to update attribute"}
 	}
 
-	return nil
+	return attribute, nil
 }
 
-func (s *AttributeStorage) UpdateObjectField(id int, field string, value string) error {
+func (s *AttributeStorage) UpdateObjectField(id int, field string, value string) (*types.DbAttribute, error) {
 	query := `UPDATE ideas.attributes SET $1 = $2 WHERE attribute_id = $3 RETURNING attribute_id`
 	rows, err := s.store.Query(query, field, value, id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !rows.Next() {
-		return StorageError{Err: fmt.Sprintf("Unable to update attribute field %s", field)}
+		return nil, InvalidFieldError{Err: "Unable to update attribute"}
 	}
 
-	return nil
+	return s.GetObject(id)
 }
 
 func (s *AttributeStorage) DeleteObject(id int) error {

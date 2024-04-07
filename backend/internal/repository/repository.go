@@ -1,5 +1,14 @@
 package repository
 
+import (
+	types "github.com/BrunoSienkiewicz/go_ideas/types"
+)
+
+type Repository[T types.DbObject, U types.ApiObject] interface {
+	convertToDbObject(obj *U) T
+	convertFromDbObject(dbObj *T) U
+}
+
 type RepositoryError interface {
 	Error() string
 }

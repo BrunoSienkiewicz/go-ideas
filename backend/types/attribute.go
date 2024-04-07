@@ -3,7 +3,8 @@ package types
 import "database/sql"
 
 type Attribute struct {
-	Id     int    `json:"id"`
+	ApiObject
+	ID     int    `json:"id"`
 	IdeaId int    `json:"idea_id"`
 	Name   string `json:"name"`
 	Value  string `json:"value"`

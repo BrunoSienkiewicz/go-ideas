@@ -1,6 +1,7 @@
 package types
 
 type User struct {
+	ApiObject
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`

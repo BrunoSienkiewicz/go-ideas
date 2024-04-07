@@ -3,6 +3,7 @@ package types
 import "database/sql"
 
 type Idea struct {
+	ApiObject
 	ID         int         `json:"id"`
 	Name       string      `json:"name"`
 	Category   string      `json:"category"`
