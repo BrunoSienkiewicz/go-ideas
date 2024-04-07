@@ -69,7 +69,7 @@ func (r *IdeaRepository) convertFromDbObject(obj *types.DbIdea) types.Idea {
 	}
 }
 
-func (r *IdeaRepository) GetIdea(id int) (*types.Idea, error) {
+func (r *IdeaRepository) GetObject(id int) (*types.Idea, error) {
 	dbIdea, err := r.ideaStorage.GetObject(id)
 	if err != nil {
 		return nil, NotFoundError{Err: "Idea with ID: " + string(id) + " Not Found"}
@@ -80,7 +80,7 @@ func (r *IdeaRepository) GetIdea(id int) (*types.Idea, error) {
 	return &idea, nil
 }
 
-func (r *IdeaRepository) GetAllIdeas() ([]*types.Idea, error) {
+func (r *IdeaRepository) GetAllObjects() ([]*types.Idea, error) {
 	dbIdeas, err := r.ideaStorage.GetAllObjects()
 	if err != nil {
 		return nil, NotFoundError{Err: "No Ideas Found"}
@@ -96,7 +96,7 @@ func (r *IdeaRepository) GetAllIdeas() ([]*types.Idea, error) {
 	return ideas, nil
 }
 
-func (r *IdeaRepository) AddIdea(idea *types.Idea) (*types.Idea, error) {
+func (r *IdeaRepository) AddObject(idea *types.Idea) (*types.Idea, error) {
 	_dbIdea := r.convertToDbObject(idea)
 	dbIdea, err := r.ideaStorage.AddObject(&_dbIdea)
 	if err != nil {
@@ -118,4 +118,49 @@ func (r *IdeaRepository) AddIdea(idea *types.Idea) (*types.Idea, error) {
 
 	idea.ID = dbIdea.Idea_id
 	return idea, nil
+}
+
+func (r *IdeaRepository) UpdateObject(idea *types.Idea) (*types.Idea, error) {
+	_dbIdea := r.convertToDbObject(idea)
+	_, err := r.ideaStorage.UpdateObject(&_dbIdea)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, attribute := range idea.Attributes {
+		dbAttribute, err := r.attributeStorage.GetObject(attribute.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		dbAttribute.Name = attribute.Name
+		dbAttribute.Value = attribute.Value
+		_, err = r.attributeStorage.UpdateObject(dbAttribute)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return idea, nil
+}
+
+func (r *IdeaRepository) DeleteObject(id int) error {
+	err := r.ideaStorage.DeleteObject(id)
+	if err != nil {
+		return err
+	}
+
+	attributes, err := r.attributeStorage.GetObjectsByField("idea_id", string(id))
+	if err != nil {
+		return err
+	}
+
+	for _, attribute := range attributes {
+		err := r.attributeStorage.DeleteObject(attribute.Attribute_id)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

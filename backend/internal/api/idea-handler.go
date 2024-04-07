@@ -10,7 +10,7 @@ import (
 )
 
 type IdeaHandler struct {
-	repository *repository.IdeaRepository
+	repository repository.Repository[types.DbIdea, types.Idea]
 }
 
 func NewIdeaHandler(repository *repository.IdeaRepository) *IdeaHandler {
@@ -45,7 +45,7 @@ func (h *IdeaHandler) handleAddIdea(w http.ResponseWriter, r *http.Request) erro
 
 	// TODO: handle idea from request
 	_idea := types.NewIdea(req.Name, req.Category, _attrubutes)
-	err, idea := h.repository.AddIdea(_idea)
+	err, idea := h.repository.AddObject(_idea)
 	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
@@ -54,7 +54,7 @@ func (h *IdeaHandler) handleAddIdea(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (h *IdeaHandler) handleGetIdea(w http.ResponseWriter, r *http.Request) error {
-	ideas, err := h.repository.GetAllIdeas()
+	ideas, err := h.repository.GetAllObjects()
 	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
@@ -68,7 +68,7 @@ func (h *IdeaHandler) handleDeleteIdea(w http.ResponseWriter, r *http.Request) e
 		return writeJSON(w, http.StatusBadRequest, err)
 	}
 
-	if err := h.repository.DeleteIdea(req.ID); err != nil {
+	if err := h.repository.DeleteObject(req.ID); err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
 
@@ -83,11 +83,12 @@ func (h *IdeaHandler) handleUpdateIdea(w http.ResponseWriter, r *http.Request) e
 
 	idea := types.NewIdea(req.Name, req.Category, req.Attributes)
 	idea.ID = req.ID
-	if err := h.repository.UpdateIdea(idea); err != nil {
+	_idea, err := h.repository.UpdateObject(idea)
+	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}
 
-	return writeJSON(w, http.StatusOK, idea)
+	return writeJSON(w, http.StatusOK, _idea)
 }
 
 func (h *IdeaHandler) handleGetIdeaByID(w http.ResponseWriter, r *http.Request) error {
@@ -96,7 +97,7 @@ func (h *IdeaHandler) handleGetIdeaByID(w http.ResponseWriter, r *http.Request) 
 		return writeJSON(w, http.StatusBadRequest, err)
 	}
 
-	idea, err := h.repository.GetIdea(id)
+	idea, err := h.repository.GetObject(id)
 	if err != nil {
 		return writeJSON(w, http.StatusInternalServerError, err)
 	}

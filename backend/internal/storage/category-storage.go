@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	getCategory          = `SELECT id FROM ideas.categories WHERE category_id = $1`
+	getCategory          = `SELECT category_id FROM ideas.categories WHERE category_id = $1`
 	getCategoriesbyField = `SELECT * FROM ideas.categories WHERE $1 = $2`
 	getAllCategories     = `SELECT * FROM ideas.categories`
 	addCategory          = `INSERT INTO ideas.categories (name) VALUES ($1) RETURNING category_id`
